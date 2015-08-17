@@ -6,6 +6,7 @@
  */
 namespace Ray\Validation;
 
+use Aura\Input\Form;
 use Doctrine\Common\Annotations\Reader;
 use Ray\Aop\MethodInterceptor;
 use Ray\Aop\MethodInvocation;
@@ -39,7 +40,12 @@ class AuraInputInterceptor implements MethodInterceptor
             $submit[$param->getName()] = array_shift($array);
         }
         $object = $invocation->getThis();
-        $isValid = $object->isValidForm($submit);
+
+        $class = new \ReflectionObject($object);
+        $prop = $class->getProperty('form');
+        $prop->setAccessible(true);
+        $form = $prop->getValue($object);
+        $isValid = $this->isValidForm($form, $submit);
         if ($isValid === true) {
             // validation success
             return $invocation->proceed();
@@ -49,5 +55,13 @@ class AuraInputInterceptor implements MethodInterceptor
         $args = (array) $invocation->getArguments();
 
         return call_user_func_array([$invocation->getThis(), $auraInput->onFailure], $args);
+    }
+
+    public function isValidForm(Form $form, array $submit)
+    {
+        $form->fill($submit);
+        $isValid = $form->filter();
+
+        return $isValid;
     }
 }

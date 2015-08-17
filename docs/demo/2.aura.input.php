@@ -52,12 +52,15 @@ class Fake3Form extends AbstractAuraForm
 
 class Fake3
 {
-    use AuraInputTrait;
-
     public $view = [];
 
     /**
-     * @param Fake3Form $form
+     * @var AbstractAuraForm
+     */
+    private $form;
+
+    /**
+     * @param AbstractAuraForm $form
      *
      * @Inject()
      * @Named("form3")
