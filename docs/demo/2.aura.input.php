@@ -57,7 +57,7 @@ class Fake3
     /**
      * @var AbstractAuraForm
      */
-    private $form;
+    protected $form;
 
     /**
      * @param AbstractAuraForm $form
